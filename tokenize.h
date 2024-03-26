@@ -9,7 +9,9 @@ class HashTable {
 public:
     HashTable(size_t size) : m(size), table(new std::forward_list<std::pair<K, V>>[size]) {}
 
-    ~HashTable() {}
+    ~HashTable() {
+        delete[] table;
+    }
 
     bool insert(const K& key, const V& value) {
         size_t index = hash(key);
@@ -37,20 +39,25 @@ public:
 
     size_t m; // Size of the hash table
 
-    void resize() {
-        auto oldSize = m;
-        m = 2*m;
-        std::forward_list<std::pair<K, V>>* newTable = new std::forward_list<std::pair<K, V>>[m];
+void resize() {
+    auto oldSize = m;
+    m *= 2;
+    auto newTable = new std::forward_list<std::pair<K, V>>[m];
+    
+    // 临时保存旧表的指针
+    auto oldTable = table;
+    table = newTable; // 更新table指向新表
 
-        for (auto i=0; i<oldSize; i++) {
-            for (auto pair: table[i]) insert(pair.first, pair.second);
+    for (size_t i = 0; i < oldSize; ++i) {
+        for (const auto& pair : oldTable[i]) {
+            size_t newIndex = hash(pair.first); // 确保使用新的m值计算哈希值
+            table[newIndex].emplace_front(pair.first, pair.second);
         }
-
-        auto temp = table;
-
-        delete[] temp;
-        table = newTable;
     }
+
+    delete[] oldTable; // 释放旧表内存
+}
+
 private:
     std::forward_list<std::pair<K, V>>* table; // Dynamically allocated array for external chaining
     size_t hash(const std::string& str) const { // Changed to const method

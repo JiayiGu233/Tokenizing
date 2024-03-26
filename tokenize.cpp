@@ -17,11 +17,13 @@ Tokenize::~Tokenize() {
 }
 
 bool Tokenize::find(const std::string& word) const {
-    for (auto pair: wordsToTokens->table[wordsToTokens->hash(word)]) {
+    if (!wordsToTokens) return false;  // 确保wordsToTokens已初始化
+    for (const auto& pair : wordsToTokens->table[wordsToTokens->hash(word)]) {
         if (word == pair.first) return true;
-        return false;
     }
+    return false;
 }
+
 
 void Tokenize::create(size_t size) {
     delete wordsToTokens; // Clean up existing hash table if any
@@ -29,7 +31,6 @@ void Tokenize::create(size_t size) {
 }
 
 bool Tokenize::insert(const std::string& word) {
-    // todo: resize看看有没有问题
     if (detector()) wordsToTokens->resize();
     if ((!find(word)) && isAlphabetic(word)) {
         wordsArray.push_back(word);
