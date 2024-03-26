@@ -9,22 +9,11 @@ class HashTable {
 public:
     HashTable(size_t size) : m(size), table(new std::forward_list<std::pair<K, V>>[size]) {}
 
-    ~HashTable() {
-        // delete[] table;
-    }
+    ~HashTable() {}
 
     bool insert(const K& key, const V& value) {
         size_t index = hash(key);
-        // std::cout << "// we survive18" << std::endl;
-        // Check if key already exists to prevent duplicates
-        for (const auto& pair : table[index]) {
-            if (pair.first == key) {
-                return false; // Key already exists
-            }
-        }
-        // std::cout << "// we survive25" << std::endl;
         table[index].emplace_front(key, value);
-        // std::cout << "// we survivv27" << std::endl;
         return true;
     }
 
@@ -35,45 +24,37 @@ public:
                 return pair.second;
             }
         }
-        return V{}; // Return default if not found
     }
 
     void print(int k) const {
-        if (k < 0 || static_cast<size_t>(k) >= m) {
-            std::cout << "Invalid index\n";
-            return;
-        }
-        bool retVal = false;
+        bool printed = false;
         for (const auto& pair : table[k]) {
-            if (std::cout << pair.first << " ") retVal = true;
+            if (std::cout << pair.first << " ") printed = true;
         }
-        if (retVal) return;
+        if (!printed) return;
         std::cout << std::endl;
     }
 
     size_t m; // Size of the hash table
+
     void resize() {
-        // std::cout << "// we call resize()" << std::endl;
         auto oldSize = m;
         m = 2*m;
         std::forward_list<std::pair<K, V>>* newTable = new std::forward_list<std::pair<K, V>>[m];
-        // std::cout << "// we survive here" << std::endl;
 
         for (auto i=0; i<oldSize; i++) {
             for (auto pair: table[i]) insert(pair.first, pair.second);
         }
-        // std::cout << "// we survive()" << std::endl;
 
         auto temp = table;
 
         delete[] temp;
-        // std::cout << "// we survive2" << std::endl;
         table = newTable;
     }
 private:
     std::forward_list<std::pair<K, V>>* table; // Dynamically allocated array for external chaining
     size_t hash(const std::string& str) const { // Changed to const method
-        unsigned ans = 0;
+        size_t ans = 0;
         for (char ch : str) { // Simplified loop
             ans = ans * 29 + ch;
         }
@@ -90,7 +71,7 @@ public:
     void create(size_t size);
     bool insert(const std::string& word);
     bool load(const std::string& filename);
-    bool find(const std::string word);
+    bool find(const std::string& word) const;
     int tok(const std::string& word) const;
     std::string ret(int token) const;
     std::vector<int> tok_all(const std::vector<std::string>& words) const;

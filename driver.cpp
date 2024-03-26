@@ -9,8 +9,6 @@
 
 int main()
 {
-
-    // your code goes here...
     Tokenize theTokenize;
 
     while (!std::cin.eof())
@@ -21,11 +19,8 @@ int main()
         {
             size_t size;
             size = std::stoi(command.substr(7));
-            if (size >= 1)
-            {
-                theTokenize.create(size);
-                std::cout << "success" << std::endl;
-            }
+            theTokenize.create(size);
+            std::cout << "success" << std::endl;
             
         }
         else if (command[0] == 'i')
@@ -43,7 +38,6 @@ int main()
         }
         else if (command[0] == 't'&& command[4] == 'a')
         {
-                // std::cout << "survive" << std::endl;
             std::string wordlist = command.substr(8);
             std::istringstream iss(wordlist);
             std::vector<std::string> words;
@@ -79,7 +73,6 @@ int main()
         {
             std::string filename;
             filename = command.substr(5);
-            // std::cout << filename << std::endl;
             if (theTokenize.load(filename))
             {
                 std::cout << "success" << std::endl;
@@ -89,7 +82,7 @@ int main()
                 std::cout << "failure" << std::endl;
             }
         }
-        else if (command[0] == 'r'&& command[4]=='a')
+        else if (command[0] == 'r' && command[4]=='a')
         {   
             std::string tokenString = command.substr(8);
             std::istringstream iss(tokenString);

@@ -1,22 +1,14 @@
-
-
 // implement classes' member functions here...
 #include "tokenize.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
 #include <vector>
-// #include <functional> // std::hash
-
-
-int counter = 0;
 
 // Constructor for Tokenize
 Tokenize::Tokenize() {
     wordsArray.push_back("");
     wordsToTokens = nullptr;
-
 }
 
 // Destructor for Tokenize
@@ -24,7 +16,7 @@ Tokenize::~Tokenize() {
     delete wordsToTokens;
 }
 
-bool Tokenize::find(const std::string word) {
+bool Tokenize::find(const std::string& word) const {
     for (auto pair: wordsToTokens->table[wordsToTokens->hash(word)]) {
         if (word == pair.first) return true;
         return false;
@@ -37,11 +29,11 @@ void Tokenize::create(size_t size) {
 }
 
 bool Tokenize::insert(const std::string& word) {
+    // todo: resize看看有没有问题
     if (detector()) wordsToTokens->resize();
-    if (!find(word) && isAlphabetic(word)) {
-        // std::cout << counter++ << std::endl;
+    if ((!find(word)) && isAlphabetic(word)) {
         wordsArray.push_back(word);
-        return wordsToTokens->insert(word, wordsArray.size());
+        return wordsToTokens->insert(word, wordsArray.size()-1);
     }
     return false;
 }
@@ -49,25 +41,23 @@ bool Tokenize::insert(const std::string& word) {
 bool Tokenize::load(const std::string& filename) {
     std::ifstream file(filename);
     std::string word;
-        // std::cout << "//we enter " << filename << std::endl;
     bool inserted = false;
     while (file >> word) {
-        // std::cout << word << std::endl;
         if (insert(word)) {
             inserted = true;
         }
-        // std::cout << "//we insert " << word << std::endl;
     }
     return inserted;
 }
 
 int Tokenize::tok(const std::string& word) const {
+    if (!find(word)) return -1;
     return wordsToTokens->get(word);
 }
 
 std::string Tokenize::ret(int token) const {
     if (token > 0 && token < wordsArray.size()) {
-        return wordsArray[token - 1];
+        return wordsArray[token];
     }
     return "N/A";
 }
